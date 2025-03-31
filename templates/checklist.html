@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Checklist{% endblock %}
+
+{% block content %}
+<h1>Registrar Checklist</h1>
+
+<!-- Mensagem de Sucesso ou Erro -->
+{% if success %}
+    <div class="alert alert-success" role="alert">
+        Checklist registrado com sucesso!
+    </div>
+{% elif error %}
+    <div class="alert alert-danger" role="alert">
+        Ocorreu um erro ao registrar o checklist. Tente novamente.
+    </div>
+{% endif %}
+
+<!-- Formulário de Checklist -->
+<form id="checklistoForm" method="POST">
+
+    <!-- Selecione o Usuário -->
+    <div class="form-group">
+        <label for="id_usuario">Usuário:</label>
+        <select name="id_usuario" id="id_usuario" class="form-control" required>
+            <option value="">Selecione o Usuário</option>
+            {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}">{{ usuario.login }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Selecione o Serviço -->
+    <div class="form-group">
+        <label for="id_servico">Serviço:</label>
+        <select name="id_servico" id="id_servico" class="form-control" required>
+            <option value="">Selecione o Serviço</option>
+            {% for servico in servicos %}
+                <option value="{{ servico.id }}">{{ servico.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Data do Checklist -->
+    <div class="form-group">
+        <label for="data">Data do Checklist:</label>
+        <input type="date" id="data" name="data" class="form-control" required>
+    </div>
+
+    <!-- Hora do Checklist -->
+    <div class="form-group">
+        <label for="hora">Hora do Checklist:</label>
+        <input type="time" id="hora" name="hora" class="form-control" required>
+    </div>
+
+    <!-- Observação -->
+    <div class="form-group">
+        <label for="observacao">Observação:</label>
+        <textarea id="observacao" name="observacao" class="form-control" rows="4" cols="50"></textarea>
+    </div>
+
+    <br>
+    <button type="button" id="confirmButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
+        Registrar Checklist
+    </button>
+</form>
+
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Dados do Checklist</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Usuário:</strong> <span id="modalUsuario"></span></p>
+                <p><strong>Serviço:</strong> <span id="modalServico"></span></p>
+                <p><strong>Data:</strong> <span id="modalData"></span></p>
+                <p><strong>Hora:</strong> <span id="modalHora"></span></p>
+                <p><strong>Observação:</strong> <span id="modalObservacao"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="submitForm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Preenche os campos de data e hora automaticamente com a data e hora atuais
+    window.onload = function () {
+        var dataInput = document.getElementById('data');
+        var horaInput = document.getElementById('hora');
+
+        var today = new Date();
+        var day = String(today.getDate()).padStart(2, '0');
+        var month = String(today.getMonth() + 1).padStart(2, '0');
+        var year = today.getFullYear();
+        dataInput.value = year + '-' + month + '-' + day;
+
+        var hours = String(today.getHours()).padStart(2, '0');
+        var minutes = String(today.getMinutes()).padStart(2, '0');
+        horaInput.value = hours + ':' + minutes;
+    };
+
+    // Exibe os dados no modal antes de confirmar
+    document.getElementById('confirmButton').addEventListener('click', function () {
+        // Preenche os dados no modal
+        document.getElementById('modalUsuario').textContent = document.getElementById('id_usuario').options[document.getElementById('id_usuario').selectedIndex].text;
+        document.getElementById('modalServico').textContent = document.getElementById('id_servico').options[document.getElementById('id_servico').selectedIndex].text;
+        document.getElementById('modalData').textContent = document.getElementById('data').value;
+        document.getElementById('modalHora').textContent = document.getElementById('hora').value;
+        document.getElementById('modalObservacao').textContent = document.getElementById('observacao').value || 'Nenhuma observação.';
+    });
+
+    // Submete o formulário ao confirmar no modal
+    document.getElementById('submitForm').addEventListener('click', function () {
+        document.getElementById('checklistoForm').submit();
+    });
+</script>
+{% endblock %}

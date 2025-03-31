@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Painel de Controle{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center flex-column vh-100">
+    <div class="text-center">
+        <h1 class="display-4">Bem-vindo, <span class="text-warning">{{ user_nome }}</span>!</h1>
+        <p class="lead">Tenha um excelente dia de trabalho.</p>
+    </div>
+
+    <div class="mt-5">
+        <h2 class="h4 text-center mb-4">Acesso Rápido</h2>
+        <div class="d-flex flex-wrap justify-content-center">
+            <a href="https://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=resumo&tipoConteudo=7PhJ+gAVw2g="
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                Consultar NFE
+            </a>
+            <a href="https://dfe-portal.svrs.rs.gov.br/Nfe/Ccc"
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                Consultar IE
+            </a>
+            <a href="https://app.sefa.pa.gov.br/sintegra/"
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                SINTEGRA
+            </a>
+            <a href="https://drive.google.com/drive/u/0/folders/1rK4CukFG5LxxTvjiPzlCMrxdXRSY82eB"
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                Relatórios
+            </a>
+            <a href="https://sngpc.anvisa.gov.br/"
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                SNGPC
+            </a>
+            <a href="https://appnfc.sefa.pa.gov.br/portal/view/cadastros/fornecedor/fornecedorSolicitacaoCadastroForm.seam"
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                Gerar CSC
+            </a>
+
+            <a href="https://farmaciapopular-portal-validacao.saude.gov.br/farmaciapopular-portal/login.jsf"
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                PBM - VALIDAÇÃO
+            </a>
+
+            <a href="https://farmaciapopular-portal.saude.gov.br/farmaciapopular-portal/login.jsf"
+               target="_blank"
+               class="btn btn-lg btn-primary m-2 shadow-sm">
+                PBM - 1
+            </a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

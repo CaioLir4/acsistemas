@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerenciamento de Backups{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+
+    <!-- Exibir mensagem de status -->
+    {% if status_message %}
+        <div class="alert mt-4 {% if 'erro' in status_message.lower() %}alert-danger{% elif 'sucesso' in status_message.lower() %}alert-success{% else %}alert-warning{% endif %}" role="alert">
+            {{ status_message }}
+        </div>
+    {% endif %}
+
+    <!-- Informações gerais e botão de ação -->
+            <div class="text-center mb-4 position-relative">
+                <button type="button" class="btn btn-lg btn-warning shadow-sm" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                    Atualizar Backups
+                </button>
+                <p class="mt-3 position-absolute end-0" style="top: 10%; transform: translateY(-50%); font-weight: bold; color: #0d6efd;">
+                    monitoramento@apiacs.iam.gserviceaccount.com
+                </p>
+                <p class="mt-3">
+                    <span class="fw-bold text-success">Backups em Dia: {{ backups_em_dia }}</span>
+                    |
+                    <span class="fw-bold text-danger">Backups Atrasados: {{ backups_atrasados }}</span>
+                    |
+                    <span class="fw-bold text-primary">Sem Registro: {{ backups_sem_registro }}</span>
+                </p>
+            </div>
+
+
+
+
+    <!-- Modal de confirmação -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirmação de Atualização</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" id="closeButton" disabled></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza de que deseja atualizar todos os backups? Este processo pode levar alguns minutos.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelButton">Cancelar</button>
+                    <form method="POST" id="updateForm">
+                        <button type="submit" class="btn btn-warning" id="confirmButton">Confirmar Atualização</button>
+                    </form>
+                    <!-- Mensagem de carregamento oculta -->
+                    <p class="text-center mt-3 d-none" id="loadingMessage">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Aguarde... Atualizando backups.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Listagem de backups -->
+    <div class="row">
+        {% for backup in backups %}
+            <div class="col-lg-2 col-md-3 col-sm-4 mb-4">
+                <a href="{{ backup.drive_link }}" target="_blank" class="no-link-styles">
+                    <div class="card h-100 border
+                        {% if backup.data_ult_bckp == 'Sem registro' %}
+                            border-primary
+                        {% elif backup.atrasado %}
+                            border-danger
+                        {% else %}
+                            border-success
+                        {% endif %}">
+                        <div class="card-body text-center">
+                            <h6 class="card-title text-truncate">{{ backup.ultimo_backup }}</h6>
+                            <p class="card-text small mb-2">Último Backup:</p>
+                            <p class="fw-bold
+                                {% if backup.data_ult_bckp == 'Sem registro' %}
+                                    text-primary
+                                {% elif backup.atrasado %}
+                                    text-danger
+                                {% else %}
+                                    text-success
+                                {% endif %}">
+                                {% if backup.data_ult_bckp == "Sem registro" %}
+                                    Sem Registro
+                                    {% if backup.nome %}
+                                        - Cliente: {{ backup.nome }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ backup.data_ult_bckp }}
+                                {% endif %}
+                            </p>
+                            {% if backup.data_ult_bckp == "Sem registro" %}
+                                <span class="badge bg-primary">Sem Registro</span>
+                            {% elif backup.atrasado %}
+                                <span class="badge bg-danger">Atrasado</span>
+                            {% else %}
+                                <span class="badge bg-success">Em Dia</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            {% if loop.index % 6 == 0 and not loop.last %}
+                </div><div class="row">
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- CSS para remover a formatação do link -->
+    <style>
+        .no-link-styles {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .no-link-styles:hover {
+            text-decoration: none;
+        }
+    </style>
+
+</div>
+
+<!-- JavaScript para controle da mensagem de carregamento -->
+<script>
+    document.getElementById('updateForm').addEventListener('submit', function (e) {
+        // Prevenir envio automático para exibir a mensagem
+        e.preventDefault();
+
+        // Ocultar os botões de ação no modal
+        document.getElementById('confirmButton').classList.add('d-none');
+        document.getElementById('cancelButton').classList.add('d-none');
+        document.getElementById('closeButton').disabled = true;
+
+        // Exibir a mensagem de carregamento
+        document.getElementById('loadingMessage').classList.remove('d-none');
+
+        // Simular atraso para envio (remova em produção)
+        setTimeout(() => {
+            this.submit(); // Enviar o formulário após exibir a mensagem
+        }, 2000);
+    });
+</script>
+{% endblock %}
