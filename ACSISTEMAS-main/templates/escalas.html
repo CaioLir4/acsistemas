@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Escalas{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Registrar Escalas</h1>
+
+        <!-- Formulário de Escala -->
+        <form method="POST" class="needs-validation" novalidate>
+            <div class="form-group">
+                <label for="data">Data da Escala:</label>
+                <input type="date" id="data" name="data" class="form-control" required>
+                <div class="invalid-feedback">
+                    Por favor, selecione uma data válida.
+                </div>
+            </div>
+
+            <!-- Selecione o Funcionário -->
+            <div class="form-group">
+                <label for="id_usuario">Funcionário:</label>
+                <select name="id_usuario" id="id_usuario" class="form-control" required>
+                    <option value="">Selecione o Funcionário</option>
+                    {% for usuario in usuarios %}
+                        <option value="{{ usuario.id }}">{{ usuario.login }}</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione um funcionário.
+                </div>
+            </div>
+
+            <!-- Tipo de Escala -->
+            <div class="form-group">
+                <label for="tipo">Tipo de Escala:</label>
+                <select name="tipo" id="tipo" class="form-control" required>
+                    <option value="">Selecione o Tipo</option>
+                    <option value="domingo">Domingo</option>
+                    <option value="feriado">Feriado</option>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, selecione o tipo de escala.
+                </div>
+            </div>
+
+            <!-- Observação -->
+            <div class="form-group">
+                <label for="observacao">Observações Adicionais:</label>
+                <textarea id="observacao" name="observacao" class="form-control" rows="4" placeholder="Caso necessário, insira observações sobre a escala."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Registrar Escala</button>
+        </form>
+
+        <hr>
+
+        <h2 class="mt-5">Histórico de Escalas</h2>
+        <!-- Tabela de Histórico -->
+        <table class="table table-striped table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Data</th>
+                    <th>Funcionário</th>
+                    <th>Tipo de Escala</th>
+                    <th>Observação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for escala in escalas %}
+                    <tr>
+                        <td>{{ escala.id }}</td>
+                        <td>{{ escala.data.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ escala.usuario_nome }}</td>
+                        <td>{{ escala.tipo | capitalize }}</td>
+                        <td>{{ escala.observacao or 'N/A' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Preenche o campo de data automaticamente com a data atual
+        window.onload = function() {
+            var dataInput = document.getElementById('data');
+
+            // Preencher o campo data com a data atual
+            var today = new Date();
+            var day = String(today.getDate()).padStart(2, '0');
+            var month = String(today.getMonth() + 1).padStart(2, '0');
+            var year = today.getFullYear();
+            dataInput.value = year + '-' + month + '-' + day;
+        }
+    </script>
+
+{% endblock %}

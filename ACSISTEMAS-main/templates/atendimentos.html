@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Atendimento{% endblock %}
+
+{% block content %}
+<h1>Registrar Atendimento</h1>
+
+<!-- Formulário de atendimento -->
+<form id="atendimentoForm" method="POST">
+    <!-- Selecione o Cliente -->
+    <div class="form-group">
+        <label for="id_cliente">Cliente:</label>
+        <select name="id_cliente" id="id_cliente" class="form-control" required>
+            <option value="">Selecione o Cliente</option>
+            {% for cliente in clientes %}
+                <option value="{{ cliente.id }}">{{ cliente.nome }} - {{ cliente.cpf_cnpj }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Selecione o Usuário -->
+    <div class="form-group">
+        <label for="id_usuario">Usuário:</label>
+        <select name="id_usuario" id="id_usuario" class="form-control" required>
+            <option value="">Selecione o Usuário</option>
+            {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}">{{ usuario.login }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Selecione o Serviço -->
+    <div class="form-group">
+        <label for="id_servico">Serviço:</label>
+        <select name="id_servico" id="id_servico" class="form-control" required>
+            <option value="">Selecione o Serviço</option>
+            {% for servico in servicos %}
+                <option value="{{ servico.id }}">{{ servico.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Data e Hora de Início -->
+    <div class="form-group">
+        <label for="data_inicio">Data e Hora de Início:</label>
+        <input type="datetime-local" id="data_inicio" name="data_inicio" class="form-control" required>
+    </div>
+
+    <!-- Data e Hora de Fim -->
+    <div class="form-group">
+        <label for="data_fim">Data e Hora de Fim:</label>
+        <input type="datetime-local" id="data_fim" name="data_fim" class="form-control" required>
+    </div>
+
+    <!-- Observação -->
+    <div class="form-group">
+        <label for="observacao">Observação:</label>
+        <textarea id="observacao" name="observacao" class="form-control" rows="4" cols="50"></textarea>
+    </div>
+
+    <!-- Campo de Resolvido -->
+    <div class="form-group">
+        <label for="resolvido">Resolvido:</label>
+        <select name="resolvido" id="resolvido" class="form-control" required>
+            <option value="">SEL</option>
+            <option value="0">Não Resolvido</option>
+            <option value="1">Resolvido</option>
+        </select>
+    </div>
+
+    <br>
+    <button type="button" id="confirmButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
+        Registrar Atendimento
+    </button>
+</form>
+
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Dados do Atendimento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Cliente:</strong> <span id="modalCliente"></span></p>
+                <p><strong>Usuário:</strong> <span id="modalUsuario"></span></p>
+                <p><strong>Serviço:</strong> <span id="modalServico"></span></p>
+                <p><strong>Data e Hora de Início:</strong> <span id="modalDataInicio"></span></p>
+                <p><strong>Data e Hora de Fim:</strong> <span id="modalDataFim"></span></p>
+                <p><strong>Observação:</strong> <span id="modalObservacao"></span></p>
+                <p><strong>Atendimento Resolvido:</strong> <span id="modalResolvido"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="submitForm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Exibe os dados no modal antes de confirmar
+    document.getElementById('confirmButton').addEventListener('click', function () {
+        document.getElementById('modalCliente').textContent = document.getElementById('id_cliente').options[document.getElementById('id_cliente').selectedIndex].text;
+        document.getElementById('modalUsuario').textContent = document.getElementById('id_usuario').options[document.getElementById('id_usuario').selectedIndex].text;
+        document.getElementById('modalServico').textContent = document.getElementById('id_servico').options[document.getElementById('id_servico').selectedIndex].text;
+        document.getElementById('modalDataInicio').textContent = document.getElementById('data_inicio').value;
+        document.getElementById('modalDataFim').textContent = document.getElementById('data_fim').value;
+        document.getElementById('modalObservacao').textContent = document.getElementById('observacao').value || 'Nenhuma observação.';
+        document.getElementById('modalResolvido').textContent = document.getElementById('resolvido').value === "1" ? "Sim" : "Não";
+    });
+
+    // Submete o formulário ao confirmar no modal
+    document.getElementById('submitForm').addEventListener('click', function () {
+        document.getElementById('atendimentoForm').submit();
+    });
+</script>
+{% endblock %}

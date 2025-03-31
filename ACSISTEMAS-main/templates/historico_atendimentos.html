@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Histórico de Atendimentos{% endblock %}
+
+{% block content %}
+<h1>Histórico de Atendimentos</h1>
+
+<!-- Filtro de pesquisa -->
+<form method="GET">
+    <div class="row">
+        <!-- Cliente -->
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="id_cliente">Cliente:</label>
+                <select name="id_cliente" id="id_cliente" class="form-control">
+                    <option value="">Selecione o Cliente</option>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}" {% if request.args.get('id_cliente') == cliente.id|string %}selected{% endif %}>
+                            {{ cliente.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Usuário -->
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="id_usuario">Usuário:</label>
+                <select name="id_usuario" id="id_usuario" class="form-control">
+                    <option value="">Selecione o Usuário</option>
+                    {% for usuario in usuarios %}
+                        <option value="{{ usuario.id }}" {% if request.args.get('id_usuario') == usuario.id|string %}selected{% endif %}>
+                            {{ usuario.login }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Serviço -->
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="id_servico">Serviço:</label>
+                <select name="id_servico" id="id_servico" class="form-control">
+                    <option value="">Selecione o Serviço</option>
+                    {% for servico in servicos %}
+                        <option value="{{ servico.id }}" {% if request.args.get('id_servico') == servico.id|string %}selected{% endif %}>
+                            {{ servico.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">Selecione o Status</option>
+                    <option value="1" {% if request.args.get('status') == "1" %}selected{% endif %}>Ativo</option>
+                    <option value="0" {% if request.args.get('status') == "0" %}selected{% endif %}>Inativo</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Situação -->
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="situacao">Situação:</label>
+                <select name="situacao" id="situacao" class="form-control">
+                    <option value="">Selecione a Situação</option>
+                    <option value="1" {% if request.args.get('situacao') == "1" %}selected{% endif %}>Resolvido</option>
+                    <option value="0" {% if request.args.get('situacao') == "0" %}selected{% endif %}>Pendente</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Data de Início -->
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="data_inicio">Data Início:</label>
+                <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="{{ request.args.get('data_inicio') }}">
+            </div>
+        </div>
+
+        <!-- Data de Fim -->
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="data_fim">Data Fim:</label>
+                <input type="date" name="data_fim" id="data_fim" class="form-control" value="{{ request.args.get('data_fim') }}">
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+<br>
+
+<!-- Card para exibir o Total de Atendimentos -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total de Atendimentos</h5>
+                <p class="card-text">{{ total_atendimentos_ativos }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>Atendimentos</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Usuário</th>
+            <th>Serviço</th>
+            <th>Data</th>
+            <th>Observação</th>
+            <th>Situação</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if atendimentos %}
+            {% for atendimento in atendimentos %}
+                <tr>
+                    <td>{{ atendimento.id }}</td>
+                    <td>{{ atendimento.cliente_nome }}</td>
+                    <td>{{ atendimento.usuario_nome }}</td>
+                    <td>{{ atendimento.servico_nome }}</td>
+                    <td>{{ atendimento.data_atendimento.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ atendimento.observacao }}</td>
+                    <td class="{{ 'resolvido' if atendimento.resolvido == 1 else 'pendente' }}">
+                            {{ "Resolvido" if atendimento.resolvido == 1 else "Pendente" }}
+                        </td>
+                    <td>
+                        <!-- Botão para abrir o modal de inutilização -->
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal{{ atendimento.id }}">
+                            Inutilizar
+                        </button>
+
+                        <!-- Modal de confirmação -->
+                        <div class="modal fade" id="confirmModal{{ atendimento.id }}" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmModalLabel">Confirmar Inutilização</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Tem certeza que deseja inutilizar este atendimento? Esta ação não pode ser desfeita.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <!-- Formulário para inutilizar o atendimento -->
+                                        <form method="POST" action="{{ url_for('inutilizar_atendimento', id_atendimento=atendimento.id) }}">
+                                            <button type="submit" class="btn btn-danger">Confirmar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="8">Nenhum atendimento encontrado.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+{% endblock %}

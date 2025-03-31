@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Acessos de {{ cliente.nome }}{% endblock %}
+
+{% block content %}
+<h1>Acessos de {{ cliente.nome }}</h1>
+
+<div class="d-flex flex-column">
+    {% for acesso in acessos %}
+        <a href="{{ acesso.link }}" target="_blank" class="btn btn-primary mb-2">
+            {{ acesso.nome }} - {{ acesso.numero }}
+        </a>
+    {% endfor %}
+</div>
+
+<a href="/clientes" class="btn btn-secondary mt-3">Voltar</a>
+{% endblock %}

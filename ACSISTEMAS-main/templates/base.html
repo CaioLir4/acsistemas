@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AC Sistemas - Sistema de Gestão Integrada">
+    <meta name="author" content="AC Sistemas">
+    <meta name="keywords" content="gestão, ERP, sistema, clientes, atendimentos, dashboard">
+
+    <title>{% block title %}AC Sistemas{% endblock %}</title>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+</head>
+
+<!-- Notificação Popup -->
+<div id="popup-notificacao" class="notificacao d-none">
+    <i class="fas fa-bell"></i>
+    Você tem <span id="contador-pendencias"></span> pendências!
+    <button onclick="fecharNotificacao()">×</button>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var totalPendencias = {{ g.total_pendencias }};
+        var popup = document.getElementById("popup-notificacao");
+        var contador = document.getElementById("contador-pendencias");
+
+        if (totalPendencias > 0) {
+            contador.innerText = totalPendencias;
+            popup.classList.remove("d-none");
+
+            // Fechar automaticamente após 5 segundos
+            setTimeout(() => {
+                popup.classList.add("d-none");
+            }, 5000);
+        }
+    });
+
+    function fecharNotificacao() {
+        document.getElementById("popup-notificacao").classList.add("d-none");
+    }
+</script>
+
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="py-3 text-center border-bottom bg-primary text-white">
+            <h1 class="fw-bold">AC SISTEMAS</h1>
+        </header>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                                <i class="fas fa-home"></i> Início
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#demandasMenu">
+                                <i class="fas fa-tasks"></i> Demandas
+                            </a>
+                            <div class="collapse" id="demandasMenu">
+                                <ul class="list-unstyled ms-3">
+                                    <li><a class="nav-link" href="/demandas_atendimentos"> <i class="fas fa-tasks"></i>Atendimentos</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/acompanhamento' %}active{% endif %}" href="/acompanhamento">
+                                <i class="fas fa-clipboard-list"></i> Acompanhamentos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/clientes' %}active{% endif %}" href="/clientes">
+                                <i class="fas fa-users"></i> Clientes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/historico' %}active{% endif %}" href="/historico">
+                                <i class="fas fa-history"></i> Histórico
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/atualizar_backups' %}active{% endif %}" href="/atualizar_backups">
+                                <i class="fas fa-database"></i> Bancos
+                            </a>
+                        </li>
+                        <!-- Dropdown Menu for Cadastros -->
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#cadastroMenu">
+                                <i class="fas fa-folder"></i> Cadastros
+                            </a>
+                            <div class="collapse" id="cadastroMenu">
+                                <ul class="list-unstyled ms-3">
+                                    <li><a class="nav-link" href="/clientes/novo"> <i class="fas fa-user-plus"></i> Cliente</a></li>
+                                    <li><a class="nav-link" href="/servicos/novo"> <i class="fas fa-cogs"></i> Serviço</a></li>
+                                    <li><a class="nav-link" href="/versoes/novo"> <i class="fas fa-cogs"></i> Versões</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- Dropdown Menu for Registro -->
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#registrarMenu" role="button" aria-expanded="false" aria-controls="registrarMenu">
+                                <i class="fas fa-folder"></i> Registrar
+                            </a>
+                            <div class="collapse" id="registrarMenu">
+                                <ul class="list-unstyled ms-3">
+                                    <li>
+                                        <a class="nav-link {% if request.path == '/atendimentos' %}active{% endif %}" href="/atendimentos">
+                                            <i class="fas fa-headset"></i> Atendimentos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link {% if request.path == '/checklist' %}active{% endif %}" href="/checklist">
+                                            <i class="fas fa-check"></i> Checklist
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link {% if request.path == '/escalas' %}active{% endif %}" href="/escalas">
+                                            <i class="fas fa-calendar-alt"></i> Escalas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/calculadora' %}active{% endif %}" href="/calculadora">
+                                <i class="fas fa-calculator"></i> Calculadora
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
